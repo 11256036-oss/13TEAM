@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}成績系統{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <a class="brand__text" href="{% url 'index' %}">成績系統</a>
+      </div>
+
+      <nav class="nav">
+        {% if user.is_authenticated %}
+          <a class="nav__link" href="{% url 'student_courses' %}">學生</a>
+          <a class="nav__link" href="{% url 'teacher_courses' %}">教師</a>
+          <a class="nav__link" href="{% url 'my_grades' %}">成績</a>
+          <a class="nav__link" href="{% url 'edit_profile' %}">個人資料</a>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button class="btn btn--ghost" type="submit">登出</button>
+          </form>
+        {% else %}
+          <a class="nav__link" href="{% url 'login' %}">登入</a>
+          <a class="nav__link" href="{% url 'register' %}">註冊</a>
+          <a class="nav__link" href="/admin/">管理者</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if user.is_authenticated %}
+      <div class="userbar">
+        <div class="userbar__left">
+          {% if user.profile.avatar %}
+            <img class="avatar" src="{{ user.profile.avatar.url }}" alt="avatar">
+          {% else %}
+            <div class="avatar avatar--fallback"></div>
+          {% endif %}
+          <div>
+            <div class="userbar__name">{{ user.profile.full_name|default:user.username }}</div>
+            <div class="userbar__sub">@{{ user.username }}</div>
+          </div>
+        </div>
+
+        <div class="userbar__right">
+          {% if user.is_authenticated %}
+          <a class="nav__link" href="{% url 'student_courses' %}">學生</a>
+
+          {% if user.is_staff or user.profile.role == "teacher" %}
+         <a class="nav__link" href="{% url 'teacher_courses' %}">教師</a>
+          {% endif %}
+
+         <a class="nav__link" href="{% url 'my_grades' %}">成績</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© 成績系統</span>
+    </div>
+  </footer>
+</body>
+</html>
+    
