@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>註冊系統</title>
+</head>
+<body>
+  <h2>學生註冊</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:red">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <p>帳號：<input name="username" required></p>
+    <p>密碼：<input type="password" name="password" required></p>
+    <p>姓名：<input name="full_name" required></p>
+    <button type="submit">註冊</button>
+  </form>
+
+  <p><a href="{% url 'login' %}">回登入頁</a></p>
+</body>
+</html>

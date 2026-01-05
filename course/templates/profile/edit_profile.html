@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}修改個人資料{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>修改個人資料</h1>
+  <p class="muted">更新姓名與頭貼（留言區會同步顯示）。</p>
+
+  <form method="post" enctype="multipart/form-data" style="margin-top:12px;">
+    {% csrf_token %}
+
+    <div style="margin-bottom:14px;">
+      <label>姓名</label>
+      <input class="input" type="text" name="full_name" value="{{ profile.full_name }}" required>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label>頭貼</label>
+      <div class="row" style="margin-top:8px;align-items:center;">
+        {% if profile.avatar %}
+          <img class="avatar" src="{{ profile.avatar.url }}" alt="avatar">
+        {% else %}
+          <div class="avatar avatar--fallback"></div>
+        {% endif %}
+        <input type="file" name="avatar">
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn" type="submit">儲存</button>
+      <a class="btn btn--ghost" href="{% url 'student_courses' %}">返回</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

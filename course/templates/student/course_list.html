@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}學生選課{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>學生選課</h1>
+  <p class="muted">你可以加選/退選課程，並前往留言與成績頁。</p>
+
+  <div class="row">
+    <a class="btn" href="{% url 'my_grades' %}">查看成績 / 平均</a>
+    <a class="btn btn--ghost" href="{% url 'edit_profile' %}">修改個人資料</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>所有課程</h2>
+
+  <table class="table">
+    <tr>
+      <th>課程</th>
+      <th>學期</th>
+      <th>老師</th>
+      <th>操作</th>
+    </tr>
+
+    {% for c in courses %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{{ c.semester }}</td>
+      <td>{{ c.teacher.username }}</td>
+      <td>
+        <a class="btn btn--ghost" href="{% url 'course_detail' c.id %}">留言</a>
+        {% if c.id in my_course_ids %}
+          <a class="btn" href="{% url 'drop_course' c.id %}">退選</a>
+        {% else %}
+          <a class="btn" href="{% url 'enroll_course' c.id %}">加選</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">目前沒有課程</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

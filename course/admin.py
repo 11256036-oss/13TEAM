@@ -1,10 +1,7 @@
 from django.contrib import admin
-from .models import Course, Enrollment
+from .models import Profile, Course, Enrollment, Comment
 
-@admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
-    list_display = ('course_id', 'name', 'teacher')
-
-@admin.register(Enrollment)
-class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course', 'midterm_score', 'final_score')
+admin.site.register(Profile)
+admin.site.register(Course)
+admin.site.register(Enrollment)
+admin.site.register(Comment)

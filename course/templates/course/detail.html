@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ course.name }} - 課程詳情</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <a class="brand__text" href="{% url 'student_courses' %}">課程系統</a>
+      </div>
+
+      <div class="nav">
+        <a class="nav__link" href="{% url 'student_courses' %}">課程列表</a>
+        <a class="nav__link" href="{% url 'my_grades' %}">我的成績</a>
+        <a class="nav__link" href="{% url 'edit_profile' %}">個人資料</a>
+
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button class="nav__link" type="submit" style="background:transparent;border:none;cursor:pointer;">登出</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding:18px 0 30px;">
+    <!-- Course Info -->
+    <div class="card">
+      <h1>{{ course.name }}</h1>
+      <div class="row" style="justify-content:space-between;">
+        <div class="muted">
+          <div>課號：{{ course.id }}</div>
+          <div>學期：{{ course.semester }}</div>
+          <div>任課老師：{{ course.teacher.username }}</div>
+        </div>
+
+        <div class="row">
+          <a class="btn btn--ghost" href="{% url 'student_courses' %}">返回課程列表</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 留言區 -->
+    <div class="card">
+      <h2>留言區</h2>
+
+      <!-- 新增留言 -->
+      <form method="post" style="margin-top:10px;">
+        {% csrf_token %}
+        <label>我要留言</label>
+        <textarea name="content" rows="3" placeholder="輸入留言內容..." required></textarea>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn" type="submit">送出留言</button>
+        </div>
+      </form>
+
+      <hr style="margin:18px 0;border:none;border-top:1px solid rgba(15,23,42,.10);">
+
+      <!-- 留言列表（主留言 + 回覆） -->
+      {% for c in comments %}
+        <div class="comment">
+          <div class="comment__head">
+            {# 頭貼：建議你確保所有帳號都有 Profile（老師也要有），不然這裡會報錯 #}
+            {% if c.user.profile.avatar %}
+              <img class="avatar" src="{{ c.user.profile.avatar.url }}" alt="avatar">
+            {% else %}
+              <div class="avatar avatar--fallback"></div>
+            {% endif %}
+
+            <div>
+              <div><b>{{ c.user.profile.full_name|default:c.user.username }}</b></div>
+              <div class="comment__meta">{{ c.created_at|date:"Y-m-d H:i" }}</div>
+            </div>
+
+            <div style="margin-left:auto;">
+              {% if c.user == user %}
+                <a class="btn btn--ghost" href="{% url 'edit_comment' c.id %}">編輯</a>
+
+                <form method="post" action="{% url 'delete_comment' c.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button class="btn btn--ghost" type="submit"
+                          onclick="return confirm('確定要刪除這則留言嗎？');">
+                    刪除
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="margin-top:10px; white-space:pre-wrap;">{{ c.content }}</div>
+
+          <!-- 回覆（老師回覆） -->
+          {% for r in c.replies.all %}
+            <div class="reply">
+              <div class="comment__head" style="margin-bottom:6px;">
+                {% if r.user.profile.avatar %}
+                  <img class="avatar" src="{{ r.user.profile.avatar.url }}" alt="avatar">
+                {% else %}
+                  <div class="avatar avatar--fallback"></div>
+                {% endif %}
+
+                <div>
+                  <div>
+                    <b>{{ r.user.profile.full_name|default:r.user.username }}</b>
+                    <span class="pill pill--blue">老師回覆</span>
+                  </div>
+                  <div class="comment__meta">{{ r.created_at|date:"Y-m-d H:i" }}</div>
+                </div>
+              </div>
+
+              <div style="white-space:pre-wrap;">{{ r.content }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% empty %}
+        <p class="muted">目前尚無留言。</p>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>

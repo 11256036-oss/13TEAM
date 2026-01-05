@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}刪除課程{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>確認刪除課程</h2>
+  <p class="muted">確定要刪除「{{ course.name }}」嗎？</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn" type="submit" onclick="return confirm('真的要刪除嗎？');">確定刪除</button>
+    <a class="btn btn--ghost" href="{% url 'teacher_courses' %}">取消</a>
+  </form>
+</div>
+{% endblock %}
